@@ -65,7 +65,5 @@ namespace LLVG20240904G3.Controllers
         public int Id { get; set; }
         public string Alumno { get; set; }
         public string Curso { get; set; }
-        public DateTime FechaMatricula { get; set; } 
-        public string Estado { get; set; } 
     }
 }

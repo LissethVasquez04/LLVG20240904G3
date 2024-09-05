@@ -3,14 +3,12 @@ using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+// Add services to the container.
 
-
+// Configuración para la autenticación por cookie
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
@@ -22,20 +20,25 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
             {
                 // Cambia el código de estado a No autorizado
                 context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+
                 // Establece el tipo de contenido como JSON (u otro formato deseado)
                 context.Response.ContentType = "application/json";
+
                 var message = new
                 {
                     error = "No autorizado",
                     message = "Debe iniciar sesión para acceder a este recurso."
                 };
+
                 // Serializa el objeto 'message' en formato JSON
                 var jsonMessage = JsonSerializer.Serialize(message);
+
                 // Escribe el mensaje JSON en la respuesta HTTP
                 return context.Response.WriteAsync(jsonMessage);
             }
         };
     });
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -46,9 +49,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllers();
 
 app.Run();

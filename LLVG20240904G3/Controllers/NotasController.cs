@@ -1,8 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using System.Linq;
 
-namespace LLVG20240904G3.Controllers
+namespace AMMA20230901.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -23,15 +24,28 @@ namespace LLVG20240904G3.Controllers
         public IActionResult RegistrarNota(Nota nota)
         {
             // Solo usuarios autenticados pueden registrar notas
+            nota.Id = notas.Count;  // Asigna el ID basado en el tamaño de la lista
             notas.Add(nota);
-            return CreatedAtAction("ObtenerNota", new { id = notas.Count - 1 }, nota);
+            return CreatedAtAction(nameof(ObtenerNota), new { id = nota.Id }, nota);
+        }
+
+        [HttpGet("{id}")]
+        [AllowAnonymous]
+        public ActionResult<Nota> ObtenerNota(int id)
+        {
+            var nota = notas.FirstOrDefault(n => n.Id == id);
+            if (nota == null)
+            {
+                return NotFound();
+            }
+            return Ok(nota);
         }
 
         public class Nota
         {
             public int Id { get; set; }
+            public string Titulo { get; set; }
             public string Contenido { get; set; }
-            public double Calificacion { get; set; } // Calificación asociada a la nota
         }
     }
 }
