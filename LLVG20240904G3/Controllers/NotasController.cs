@@ -1,43 +1,37 @@
-﻿using Microsoft.AspNetCore.Mvc;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 
 namespace LLVG20240904G3.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class NotasController : ControllerBase
+    public class NotaController : ControllerBase
     {
-        // GET: api/<NotasController>
+        private static List<Nota> notas = new List<Nota>();
+
         [HttpGet]
-        public IEnumerable<string> Get()
+        [AllowAnonymous]
+        public IEnumerable<Nota> ObtenerNotas()
         {
-            return new string[] { "value1", "value2" };
+            // Devuelve todas las notas, ya que este endpoint es público
+            return notas;
         }
 
-        // GET api/<NotasController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
-        }
-
-        // POST api/<NotasController>
         [HttpPost]
-        public void Post([FromBody] string value)
+        [Authorize]
+        public IActionResult RegistrarNota(Nota nota)
         {
+            // Solo usuarios autenticados pueden registrar notas
+            notas.Add(nota);
+            return CreatedAtAction("ObtenerNota", new { id = notas.Count - 1 }, nota);
         }
 
-        // PUT api/<NotasController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public class Nota
         {
-        }
-
-        // DELETE api/<NotasController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
+            public int Id { get; set; }
+            public string Contenido { get; set; }
+            public double Calificacion { get; set; } // Calificación asociada a la nota
         }
     }
 }
