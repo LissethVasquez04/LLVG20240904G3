@@ -23,8 +23,7 @@ namespace AMMA20230901.Controllers
         [Authorize]
         public IActionResult RegistrarNota(Nota nota)
         {
-            // Solo usuarios autenticados pueden registrar notas
-            nota.Id = notas.Count;  // Asigna el ID basado en el tamaño de la lista
+            // Solo usuarios autenticados pueden registrar nota
             notas.Add(nota);
             return CreatedAtAction(nameof(ObtenerNota), new { id = nota.Id }, nota);
         }
