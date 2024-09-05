@@ -1,4 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -8,36 +12,47 @@ namespace LLVG20240904G3.Controllers
     [ApiController]
     public class AccountController : ControllerBase
     {
-        // GET: api/<AccountController>
-        [HttpGet]
-        public IEnumerable<string> Get()
+        [HttpPost("login")]
+        public IActionResult Login(string login, string password)
         {
-            return new string[] { "value1", "value2" };
-        }
+            // Comprueba si las credenciales son válidas
+            if (login == "admin" && password == "12345")
+            {
+                var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, login)
+                };
+                var claimsIdentity = new ClaimsIdentity(claims,
+                    CookieAuthenticationDefaults.AuthenticationScheme);
+                var authProperties = new AuthenticationProperties
+                {
+                    // Puedes configurar propiedades adicionales aquí
+                    // Por ejemplo, para hacer que la cookie persista:
+                    IsPersistent = true,
+                    // Para especificar una fecha de expiración:
+                    ExpiresUtc = DateTime.UtcNow.AddDays(7)
+                };
+                // Inicia sesión del usuario
+                HttpContext.SignInAsync(
+                   CookieAuthenticationDefaults.AuthenticationScheme,
+                   new ClaimsPrincipal(claimsIdentity), authProperties);
+                return Ok("Inició sesión correctamente.");
+            }
+            else
+            {
+                return Ok("Credenciales Incorrectas.");
 
-        // GET api/<AccountController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
+            }
         }
-
-        // POST api/<AccountController>
-        [HttpPost]
-        public void Post([FromBody] string value)
+        [HttpPost("logout")]
+        public IActionResult Logout()
         {
-        }
+            // Cierra la sesión del usuarios
+            HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 
-        // PUT api/<AccountController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
-
-        // DELETE api/<AccountController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
+            // Devuelve una respuesta exitosa
+            return Ok("Cerró sesión correctamente.");
         }
     }
+
 }
