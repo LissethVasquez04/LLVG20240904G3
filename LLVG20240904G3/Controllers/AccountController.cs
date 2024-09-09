@@ -13,8 +13,8 @@ namespace LLVG20240904G3.Controllers
         // Simulación de una base de datos con usuarios y contraseñas
         private static Dictionary<string, string> usuarios = new Dictionary<string, string>
         {
-            {"estudiante1", "123456"},
-            {"profesor2", "098767"}
+            {"Admin", "123456"},
+          
         };
         
         [HttpPost("login")]

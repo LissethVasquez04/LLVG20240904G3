@@ -3,10 +3,11 @@ using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace AMMA20230901.Controllers
+namespace LLVG20240904G3.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+
     public class NotaController : ControllerBase
     {
         private static List<Nota> notas = new List<Nota>();
